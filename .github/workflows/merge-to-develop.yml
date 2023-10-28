@@ -8,7 +8,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: preview-devs-bank
-  AZURE_WEBAPP_PACKAGE_PATH: "./publish"
+  AZURE_WEBAPP_PACKAGE_PATH: "./publish-preview"
 
 jobs:
   publish:

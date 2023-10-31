@@ -53,6 +53,7 @@ public class BankUserAccountService : IBankUserAccountService
         var bankUserEntity = (await _storageContext.DbUsers).SingleOrDefault(user => user.Id == customerId);
         if (bankUserEntity == null)
         {
+            // an actual domain exception should be thrown here something like UserUnkownException.
             throw new InvalidOperationException($"The user with id {customerId} does not exist");
         }
 

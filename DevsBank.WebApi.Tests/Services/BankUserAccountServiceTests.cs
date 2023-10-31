@@ -53,4 +53,21 @@ public class BankUserAccountServiceTests
 
         (await storageContext.Transactions).Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task When_opening_an_account_for_an_unknown_user_it_should_throw()
+    {
+        // Arrange
+        var initialCredit = 0;
+        var storageContext = new StorageContext();
+        var bankUserValidator = new BankUserValidator(storageContext);
+        var unknownUser = Guid.NewGuid();
+        BankUserAccountService bankUserAccountService = new BankUserAccountService(bankUserValidator, storageContext);
+
+        // Act
+        Func<Task> whenOpeningAccount = async () =>  await bankUserAccountService.OpenAccount(unknownUser, initialCredit);
+
+        // Assert
+        await whenOpeningAccount.Should().ThrowAsync<InvalidOperationException>();
+    }
 }

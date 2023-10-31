@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DevsBank.ApplicationServices\DevsBank.ApplicationServices.csproj" />
       <ProjectReference Include="..\DevsBank.Domain\DevsBank.Domain.csproj" />
     </ItemGroup>
 

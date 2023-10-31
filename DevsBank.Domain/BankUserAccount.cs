@@ -4,10 +4,10 @@ namespace DevsBank.Domain;
 
 public class BankUserAccount
 {
-    private readonly Guid _id;
     private readonly BankUser _existingBankUser;
-    private readonly IBankUserValidator _bankUserValidator;
     private readonly List<BankAccountTransaction> _transactions;
+
+    public Guid Id { get; }
 
     // I know that money is not an integer and for very rich people it won't be enough
     // but money can be represented in different ways in the code so
@@ -24,9 +24,8 @@ public class BankUserAccount
             throw new InvalidOperationException("Unknown bank account user");
         }
 
-        _id = id;
+        Id = id;
         _existingBankUser = existingBankUser;
-        _bankUserValidator = bankUserValidator;
         _transactions = new List<BankAccountTransaction>();
     }
 

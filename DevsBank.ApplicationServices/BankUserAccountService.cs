@@ -15,7 +15,7 @@ public class BankUserAccountService : IBankUserAccountService
         _storageContext = storageContext;
     }
 
-    public async Task OpenAccount(Guid customerId, int initialCredit)
+    public async Task<Guid> OpenAccount(Guid customerId, int initialCredit)
     {
         BankUser existingBankUser = await FindBankUser(customerId);
         var bankUserAccount = new BankUserAccount(Guid.NewGuid(), existingBankUser, _bankUserValidator);
@@ -26,6 +26,7 @@ public class BankUserAccountService : IBankUserAccountService
         }
 
         SaveOpenAccountToDatabase(bankUserAccount, existingBankUser);
+        return bankUserAccount.Id;
     }
 
     private void SaveOpenAccountToDatabase(BankUserAccount bankUserAccount, BankUser existingBankUser)

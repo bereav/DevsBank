@@ -1,6 +1,8 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using DevsBank.ApplicationServices;
+using DevsBank.ApplicationServices.Validators;
+using DevsBank.Domain.DomainValidators;
 using DevsBank.Storage;
 
 namespace DevsBank.WebApi;
@@ -37,6 +39,8 @@ public class Startup
         services.ConfigureOptions<ConfigureSwaggerOptions>();
         services.AddTransient<IBankUserService, BankUserService>();
         services.AddSingleton<StorageContext>();
+        services.AddTransient<IBankUserAccountService, BankUserAccountService>();
+        services.AddTransient<IBankUserValidator, BankUserValidator>();
     }
 
     public void Configure(WebApplication webApplication, IWebHostEnvironment env)

@@ -2,5 +2,5 @@
 
 public interface IBankUserAccountService
 {
-    public Task OpenAccount(Guid customerId, int initialCredit);
+    public Task<Guid> OpenAccount(Guid customerId, int initialCredit);
 }

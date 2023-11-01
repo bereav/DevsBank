@@ -2,7 +2,6 @@ using Asp.Versioning;
 using DevsBank.ApplicationServices;
 using DevsBank.ApplicationServices.ReadModels;
 using DevsBank.Domain;
-using DevsBank.WebApi.ResponseDtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevsBank.WebApi.Controllers.V1;

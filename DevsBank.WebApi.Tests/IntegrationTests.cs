@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using DevsBank.ApplicationServices.ReadModels;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 using Newtonsoft.Json;
@@ -22,12 +23,25 @@ public class IntegrationTests
         var credit = 1000;
 
         // Act
-        var response = await _httpClient.PostAsync($"/api/v1.0/Accounts?customerId={customerId}&credit={credit}", null);
-        response.EnsureSuccessStatusCode();
+        var openAccountResponse = await _httpClient.PostAsync($"/api/v1.0/Accounts?customerId={customerId}&credit={credit}", null)
+            .ConfigureAwait(false);
+        openAccountResponse.EnsureSuccessStatusCode();
 
-        var newAccountId = JsonConvert.DeserializeObject<Guid>(await response.Content.ReadAsStringAsync());
+        var getAccountsResponse = await _httpClient.GetAsync($"/api/v1.0/Accounts?customerId={customerId}")
+            .ConfigureAwait(false);
+        getAccountsResponse.EnsureSuccessStatusCode();
 
         // Assert
+        var newAccountId = JsonConvert.DeserializeObject<Guid>(await openAccountResponse.Content.ReadAsStringAsync());
         newAccountId.Should().NotBe(Guid.Empty);
+
+        AccountReadModel accountReadModel = JsonConvert
+            .DeserializeObject<IEnumerable<AccountReadModel>>(await getAccountsResponse.Content.ReadAsStringAsync())
+            .Single();
+
+        // we should check for all the relevant properties here but they are already tested in BankUserAccountServiceTests
+        accountReadModel.Balance.Should().Be(credit);
+        accountReadModel.Transactions.Single().TransactedAmount.Should().Be(credit);
     }
+
 }

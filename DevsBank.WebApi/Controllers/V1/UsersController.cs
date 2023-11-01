@@ -1,7 +1,7 @@
 using Asp.Versioning;
 using DevsBank.ApplicationServices;
+using DevsBank.ApplicationServices.ReadModels;
 using DevsBank.Domain;
-using DevsBank.WebApi.ResponseDtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevsBank.WebApi.Controllers.V1;
@@ -21,11 +21,11 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet(Name = "[controller]/Get")]
-    [Produces(typeof(UserInfo))]
-    public async Task<IEnumerable<UserInfo>> Get()
+    [Produces(typeof(UserReadModel))]
+    public async Task<IEnumerable<UserReadModel>> Get()
     {
         var domainUsers= await _bankUserService.GetUsersAsync();
-        return domainUsers.Select(domainUser => new UserInfo
+        return domainUsers.Select(domainUser => new UserReadModel
         {
             Id = domainUser.Id, Name = domainUser.Name, Surname = domainUser.Surname
         }).ToArray();

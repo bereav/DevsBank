@@ -1,4 +1,5 @@
-﻿using DevsBank.Domain;
+﻿using DevsBank.ApplicationServices.ReadModels;
+using DevsBank.Domain;
 using DevsBank.Domain.DomainValidators;
 using DevsBank.Storage;
 
@@ -26,7 +27,36 @@ public class BankUserAccountService : IBankUserAccountService
         }
 
         SaveOpenAccountToDatabase(bankUserAccount, existingBankUser);
-        return bankUserAccount.Id;
+        return bankUserAccount.Id;// we might want to have something fancier than a GUID as Identity for an Account/BankUser...
+    }
+
+    public async Task<IEnumerable<AccountReadModel>> GetUserAccounts(Guid customerId)
+    {
+        List<AccountReadModel> readModel = new();
+        BankUser existingBankUser = await FindBankUser(customerId);
+        var userAccounts = (await _storageContext.Accounts)
+            .Where(account => account.BankUserId == existingBankUser.Id);
+
+        foreach (var accountEntity in userAccounts)
+        {
+            IEnumerable<TransactionReadModel> transactionReadModels = (await _storageContext.Transactions)
+                .Where(t => t.AccountId == accountEntity.Id)
+                .Select(transactionEntity => new TransactionReadModel
+                {
+                    SentAt = transactionEntity.SentAt,
+                    TransactedAmount = transactionEntity.TransactedAmount,
+                });
+
+            readModel.Add(new AccountReadModel
+            {
+                Balance = accountEntity.Balance,
+                Surname = existingBankUser.Surname,
+                Name = existingBankUser.Name,
+                Transactions = transactionReadModels
+            });
+        }
+
+        return readModel.ToArray();
     }
 
     private void SaveOpenAccountToDatabase(BankUserAccount bankUserAccount, BankUser existingBankUser)
@@ -42,6 +72,7 @@ public class BankUserAccountService : IBankUserAccountService
         {
             _storageContext.AddTransaction(new TransactionEntity
             {
+                AccountId = bankUserAccount.Id,
                 TransactedAmount = transaction.TransactedAmount,
                 SentAt = transaction.SentAt
             });

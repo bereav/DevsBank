@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using DevsBank.ApplicationServices;
+using DevsBank.ApplicationServices.ReadModels;
 using DevsBank.Domain;
 using DevsBank.WebApi.ResponseDtos;
 using Microsoft.AspNetCore.Mvc;
@@ -24,5 +25,13 @@ public class AccountsController : ControllerBase
         Guid bankUserAccountId = await _bankAccountService.OpenAccount(customerId, credit);
 
         return new OkObjectResult(bankUserAccountId);
+    }
+
+    [HttpGet(Name = "[controller]/GetAccounts")]
+    public async Task<ActionResult<IEnumerable<AccountReadModel>>> GetAccounts(Guid customerId)
+    {
+        IEnumerable<AccountReadModel> accounts = await _bankAccountService.GetUserAccounts(customerId);
+
+        return new OkObjectResult(accounts);
     }
 }

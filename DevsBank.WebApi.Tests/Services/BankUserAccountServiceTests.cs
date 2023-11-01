@@ -1,4 +1,5 @@
 ﻿using DevsBank.ApplicationServices;
+using DevsBank.ApplicationServices.ReadModels;
 using DevsBank.ApplicationServices.Validators;
 using DevsBank.Storage;
 using FluentAssertions;
@@ -31,6 +32,7 @@ public class BankUserAccountServiceTests
 
         var savedTransaction = (await storageContext.Transactions).Single();
         savedTransaction.TransactedAmount.Should().Be(initialCredit);
+        savedTransaction.AccountId.Should().Be(savedAccount.Id);
     }
 
     [Fact]
@@ -52,6 +54,28 @@ public class BankUserAccountServiceTests
         savedAccount.Balance.Should().Be(initialCredit);
 
         (await storageContext.Transactions).Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task When_getting_existing_user_accounts_it_should_get_them_with_their_transactions()
+    {
+        // Arrange
+        var initialCredit = 20;
+        var storageContext = new StorageContext();
+        var bankUserValidator = new BankUserValidator(storageContext);
+        var existingBankUser = (await storageContext.DbUsers).First();
+        BankUserAccountService bankUserAccountService = new BankUserAccountService(bankUserValidator, storageContext);
+        await bankUserAccountService.OpenAccount(existingBankUser.Id, initialCredit);
+
+        // Act
+        var readModels = await bankUserAccountService.GetUserAccounts(existingBankUser.Id);
+
+        // Assert
+        AccountReadModel readModel = readModels.Single();
+        readModel.Balance.Should().Be(initialCredit);
+        readModel.Name.Should().Be(existingBankUser.Name);
+        readModel.Surname.Should().Be(existingBankUser.Surname);
+        readModel.Transactions.Single().TransactedAmount.Should().Be(initialCredit);
     }
 
     [Fact]
